@@ -1,11 +1,22 @@
 <?php
 
 namespace OalidCse\Controllers;
+use OalidCse\Models\FontGroup;
+use OalidCse\Models\FontGroupFont;
+
 require_once __DIR__ . "/../../config.php";
+require_once __DIR__."/../../app/Models/FontGroup.php";
+require_once __DIR__."/../../app/Models/FontGroupFont.php";
 
 class FontGroupController
 {
-
+    private $fontGroupModel;
+    private $fontGroupFontModel;
+    public function __construct()
+    {
+        $this->fontGroupModel = new FontGroup();
+        $this->fontGroupFontModel = new FontGroupFont();
+    }
     public function storeFontGroup($request)
     {
         try {
@@ -32,20 +43,20 @@ class FontGroupController
                 ];
             }
 
-            $conn = getConnection();
-            $stmt = $conn->prepare("INSERT INTO font_groups (group_name) VALUES (?)");
-            $stmt->bind_param('s', $name);
-            $stmt->execute();
-            $fontGroupId = $stmt->insert_id;
-            $stmt->close();
-
-            $stmt = $conn->prepare("INSERT INTO font_group_fonts (font_group_id, font_id) VALUES (?, ?)");
+            // Save the file details to the database
+            $storeData = [
+                'group_name' => $name
+            ];
+            $fontGroup = $this->fontGroupModel->store($storeData);
+            $fontGroupId = $fontGroup['id'];
 
             foreach ($fontIds as $fontId) {
-                $stmt->bind_param('ii', $fontGroupId, $fontId);
-                $stmt->execute();
+                $storeData = [
+                    'font_group_id' => $fontGroupId,
+                    'font_id' => $fontId
+                ];
+                $this->fontGroupFontModel->store($storeData);
             }
-            $stmt->close();
 
             return [
               'status' => 200,
@@ -62,24 +73,12 @@ class FontGroupController
     public function getFontGroups()
     {
         try {
-            $conn = getConnection();
-            $stmt = $conn->prepare("SELECT * FROM font_groups");
-            $stmt->execute();
-            $result = $stmt->get_result();
-            $stmt->close();
 
+            $groups = $this->fontGroupModel->all();
             $fontGroups = [];
-            while ($row = $result->fetch_assoc()) {
-                $innerRow = $row;
-                $stmt = $conn->prepare("SELECT f.* FROM font_group_fonts fgf JOIN fonts f ON fgf.font_id = f.id WHERE fgf.font_group_id = ?");
-                $stmt->bind_param('i', $row['id']);
-                $stmt->execute();
-                $result2 = $stmt->get_result();
-                $fonts = $result2->fetch_all(MYSQLI_ASSOC);
-                $stmt->close();
-                $innerRow['fonts'] = $fonts;
-
-                $fontGroups[] = $innerRow;
+            foreach ($groups as $fontGroup) {
+                $fontGroup['fonts'] = $this->fontGroupModel->fonts($fontGroup['id']);
+                $fontGroups[] = $fontGroup;
             }
 
             return [
@@ -97,14 +96,7 @@ class FontGroupController
     public function deleteFontGroup($fontGroupId)
     {
         try {
-
-            $conn = getConnection();
-            $stmt = $conn->prepare("SELECT * FROM font_groups WHERE id = ?");
-            $stmt->bind_param('i', $fontGroupId);
-            $stmt->execute();
-            $result = $stmt->get_result();
-            $fontGroup = $result->fetch_assoc();
-            $stmt->close();
+            $fontGroup = $this->fontGroupModel->read($fontGroupId);
 
             if (!$fontGroup) {
                 return [
@@ -113,15 +105,9 @@ class FontGroupController
                 ];
             }
 
-            $stmt = $conn->prepare("DELETE FROM font_groups WHERE id = ?");
-            $stmt->bind_param('i', $fontGroupId);
-            $stmt->execute();
-            $stmt->close();
+            $this->fontGroupModel->delete($fontGroupId);
 
-            $stmt = $conn->prepare("DELETE FROM font_group_fonts WHERE font_group_id = ?");
-            $stmt->bind_param('i', $fontGroupId);
-            $stmt->execute();
-            $stmt->close();
+            $this->fontGroupFontModel->deleteByFontGroupId($fontGroupId);
 
             return [
               'status' => 200,

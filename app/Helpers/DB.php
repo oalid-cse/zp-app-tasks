@@ -10,6 +10,7 @@ class DB
 {
     private $connection;
     private $table;
+    private $selectConditions = [];
 
     public function __construct()
     {
@@ -91,6 +92,30 @@ class DB
         $query = "SELECT * FROM $this->table";
         $result = $this->connection->query($query);
         return $result->fetch_all(MYSQLI_ASSOC);
+    }
+
+    public function where($array)
+    {
+        $this->selectConditions = $array;
+        return $this;
+    }
+
+    public function get()
+    {
+        $query = $this->getSelectQuery();
+        $result = $this->connection->query($query);
+        return $result->fetch_all(MYSQLI_ASSOC);
+    }
+
+    public function getSelectQuery(): string
+    {
+        $where = '';
+        foreach ($this->selectConditions as $key => $value) {
+            $where .= "$key = '$value' AND ";
+        }
+        $where = rtrim($where, ' AND ');
+        $query = "SELECT * FROM $this->table WHERE $where";
+        return $query;
     }
 
     public function sanitizeInputData($data): array
