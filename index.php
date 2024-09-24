@@ -73,38 +73,7 @@ ini_set('display_errors', '1');
                     <input type="text" class="form-control" id="groupName" name="name" required>
                 </div>
                 <div class="font-group-item-wrapper">
-                    <div class="font-group-item">
-                        <div class="form-group font-list">
-                            <label class="form-label">Select Fonts</label>
-                            <select class="form-select fontSelect" name="font_ids[]" required
-                                    onchange="selectGroupFont(this)"></select>
-                        </div>
-                        <div class="form-group font-name">
-                            <label class="form-label">Font Name</label>
-                            <input type="text" class="form-control font-name" disabled>
-                        </div>
-                        <div class="action">
-                            <button type="button" class="font-group-item-delete" onclick="deleteGroupItem(this)">
-                                X
-                            </button>
-                        </div>
-                    </div>
-                    <div class="font-group-item">
-                        <div class="form-group font-list">
-                            <label class="form-label">Select Fonts</label>
-                            <select class="form-select fontSelect" name="font_ids[]" required
-                                    onchange="selectGroupFont(this)"></select>
-                        </div>
-                        <div class="form-group font-name">
-                            <label class="form-label">Font Name</label>
-                            <input type="text" class="form-control font-name" disabled>
-                        </div>
-                        <div class="action">
-                            <button type="button" class="font-group-item-delete" onclick="deleteGroupItem(this)">
-                                X
-                            </button>
-                        </div>
-                    </div>
+
                 </div>
 
                 <div class="d-flex justify-content-between">
@@ -140,10 +109,32 @@ ini_set('display_errors', '1');
         </div>
     </div>
 
+    <div id="hidden-item" class="d-none">
+        <div id="groupItem">
+            <div class="font-group-item">
+                <div class="form-group font-list">
+                    <label class="form-label">Select Fonts</label>
+                    <select class="form-select fontSelect" name="font_ids[]" required
+                            onchange="selectGroupFont(this)"></select>
+                </div>
+                <div class="form-group font-name">
+                    <label class="form-label">Font Name</label>
+                    <input type="text" class="form-control font-name" disabled>
+                </div>
+                <div class="action">
+                    <button type="button" class="font-group-item-delete" onclick="deleteGroupItem(this)">
+                        X
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="./assets/js/scripts.js"></script>
+    <script src="./assets/js/droparea-handler.js"></script>
 
 </body>
 </html>

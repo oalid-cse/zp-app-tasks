@@ -1,5 +1,5 @@
 <?php
-namespace OalidCse\ZeptoAppsAssignments\Controllers;
+namespace OalidCse\Controllers;
 
 require_once __DIR__."/../../config.php";
 
