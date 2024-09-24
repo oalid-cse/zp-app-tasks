@@ -10,8 +10,8 @@ require_once __DIR__."/../../app/Models/FontGroupFont.php";
 
 class FontGroupController
 {
-    private $fontGroupModel;
-    private $fontGroupFontModel;
+    private FontGroup $fontGroupModel;
+    private FontGroupFont $fontGroupFontModel;
     public function __construct()
     {
         $this->fontGroupModel = new FontGroup();
@@ -121,7 +121,7 @@ class FontGroupController
         }
     }
 
-    public function updateFontGroup($request)
+    public function updateFontGroup($request): array
     {
         try {
             //validation
@@ -148,24 +148,16 @@ class FontGroupController
                 ];
             }
 
-            $conn = getConnection();
-            $stmt = $conn->prepare("UPDATE font_groups SET group_name = ? WHERE id = ?");
-            $stmt->bind_param('si', $name, $fontGroupId);
-            $stmt->execute();
-            $stmt->close();
+            $this->fontGroupModel->update($fontGroupId, ['group_name' => $name]);
 
-            $stmt = $conn->prepare("DELETE FROM font_group_fonts WHERE font_group_id = ?");
-            $stmt->bind_param('i', $fontGroupId);
-            $stmt->execute();
-            $stmt->close();
-
-            $stmt = $conn->prepare("INSERT INTO font_group_fonts (font_group_id, font_id) VALUES (?, ?)");
+            $this->fontGroupFontModel->deleteByFontGroupId($fontGroupId);
 
             foreach ($fontIds as $fontId) {
-                $stmt->bind_param('ii', $fontGroupId, $fontId);
-                $stmt->execute();
+                $this->fontGroupFontModel->store([
+                    'font_group_id' => $fontGroupId,
+                    'font_id' => $fontId
+                ]);
             }
-            $stmt->close();
 
             return [
               'status' => 200,
