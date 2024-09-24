@@ -1,10 +1,12 @@
 <?php
 namespace OalidCse\Controllers;
 
+use OalidCse\Helpers\FileManager;
 use OalidCse\Models\Font;
 
 require_once __DIR__."/../../config.php";
 require_once __DIR__."/../../app/Models/Font.php";
+require_once __DIR__."/../../app/Helpers/FileManager.php";
 
 class FontController
 {
@@ -21,42 +23,22 @@ class FontController
     public function uploadFont($file)
     {
         try {
-            $fileName = $file['name'];
-            $fileTmpName = $file['tmp_name'];
-            $fileExtension = pathinfo($fileName, PATHINFO_EXTENSION);
-            $fileName = explode('.', $fileName)[0];
 
-            // Validate only TTF files
-            if (strtolower($fileExtension) !== 'ttf') {
-                return [
-                  'status' => 400,
-                  'msg' => 'Only .ttf files are allowed.'
-                ];
-            }
+            $fileManager = new FileManager();
+            $fileNames = $fileManager->uploadFonts($file);
 
-            // Save the file to the uploads directory
-            $newFileName = uniqid('', true) . '.ttf';
-            $destination = $this->getUploadDir() . $newFileName;
+            // Save the file details to the database
+            $storeData = [
+                'name' => $fileNames['filename'],
+                'file' => $fileNames['file'],
+                'status' => 1
+            ];
+            $this->fontModel->store($storeData);
 
-            if (move_uploaded_file($fileTmpName, $destination)) {
-                // Save the file details to the database
-                $storeData = [
-                    'name' => $fileName,
-                    'file' => $newFileName,
-                    'status' => 1
-                ];
-                $this->fontModel->store($storeData);
-
-                return [
-                  'status' => 200,
-                  'msg' => 'Font uploaded successfully!',
-                ];
-            } else {
-                return [
-                  'status' => 400,
-                  'msg' => 'Failed to upload font.'
-                ];
-            }
+            return [
+              'status' => 200,
+              'msg' => 'Font uploaded successfully!',
+            ];
 
         } catch (\Exception $e) {
             return [
@@ -86,16 +68,7 @@ class FontController
             ];
         }
 
-        //check if font exists in font groups
-        $conn = getConnection();
-        $stmt = $conn->prepare("SELECT * FROM font_group_fonts WHERE font_id = ?");
-        $stmt->bind_param('i', $fontId);
-        $stmt->execute();
-        $result = $stmt->get_result();
-        $fontGroup = $result->fetch_assoc();
-        $stmt->close();
-
-        if ($fontGroup) {
+        if ($this->fontModel->checkHasGroup($fontId)) {
             return [
                 'status' => 400,
                 'msg' => 'Font is using in group! Please delete the group or remove the fonts from group first.'

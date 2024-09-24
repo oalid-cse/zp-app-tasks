@@ -252,6 +252,7 @@ function editFontGroup(id) {
     $(".createFontGroupCard .back-to-create").removeClass('d-none');
     $(".createFontGroupCard .card-title").html('Edit Font Group');
     $(".createFontGroupCard .fontGroupCreateBtn").html('Update');
+    $("#groupName").focus();
 
     $('html, body').animate({
         scrollTop: $("#createFontGroupCard").offset().top
