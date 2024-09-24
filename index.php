@@ -21,7 +21,6 @@ ini_set('display_errors', '1');
             <h5 class="card-title">
                 Upload Font (Only .ttf)
             </h5>
-
         </div>
         <div class="card-body text-center">
             <form id="fontUploadForm" enctype="multipart/form-data">
@@ -31,6 +30,42 @@ ini_set('display_errors', '1');
                 </label>
             </form>
             <small class="text-muted">Fonts will be uploaded automatically when selected.</small>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <h5 class="card-title">
+                Uploaded Fonts
+            </h5>
+
+        </div>
+        <div class="card-body" id="fontList">
+            <div class="table-wrapper">
+                <table class="table table-striped" id="fontListTable">
+                    <thead>
+                    <tr>
+                        <th>Font Name</th>
+                        <th>Preview</th>
+                        <th></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td>Font 0</td>
+                        <td><span >Example Style</span></td>
+                        <td><a href="javascript:void(0);" onclick="deleteFont(1)" class="text-danger">Delete</a></td>
+                    </tr>
+
+                    <tr>
+                        <td>Font 1</td>
+                        <td><span >Example Style</span></td>
+                        <td><a href="javascript:void(0);" onclick="deleteFont(2)" class="text-danger">Delete</a></td>
+                    </tr>
+
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 

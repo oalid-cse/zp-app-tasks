@@ -11,3 +11,24 @@
     background-color: #f0f0f0;
     border-color: #333333;
 }
+a {
+    text-decoration: none;
+}
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.back-to-create {
+    background-color: #86b7fe;
+    border: 1px solid #86b7fe;
+    color: #fff;
+    border-radius: 7px;
+}
+.back-to-create:hover {
+    background-color: #64a0f7;
+    color: #fff;
+    border: 1px solid #64a0f7;
+}
+
+
