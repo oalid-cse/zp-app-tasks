@@ -32,3 +32,31 @@ a {
 }
 
 
+/*font group*/
+.font-group-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: end;
+    margin-bottom: 23px;
+    box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+    padding: 10px 20px 15px 20px;
+    border-radius: 7px;
+}
+.font-group-item .font-list {
+    flex-basis: 45%;
+}
+.font-group-item .font-name {
+    flex-basis: 45%;
+}
+.font-group-item .action {
+    flex-basis: 7%;
+    text-align: right;
+}
+.font-group-item .action .font-group-item-delete{
+    background: transparent;
+    border: transparent;
+    color: red;
+    font-weight: 700;
+    margin-bottom: 10px;
+}
+
