@@ -1,10 +1,18 @@
 <?php
 namespace OalidCse\Controllers;
 
+use OalidCse\Models\Font;
+
 require_once __DIR__."/../../config.php";
+require_once __DIR__."/../../app/Models/Font.php";
 
 class FontController
 {
+    private $fontModel;
+    public function __construct()
+    {
+        $this->fontModel = new Font();
+    }
 
     public function getUploadDir()
     {
@@ -32,11 +40,12 @@ class FontController
 
             if (move_uploaded_file($fileTmpName, $destination)) {
                 // Save the file details to the database
-                $conn = getConnection();
-                $stmt = $conn->prepare("INSERT INTO fonts (name, file) VALUES (?, ?)");
-                $stmt->bind_param('ss', $fileName, $newFileName);
-                $stmt->execute();
-                $stmt->close();
+                $storeData = [
+                    'name' => $fileName,
+                    'file' => $newFileName,
+                    'status' => 1
+                ];
+                $this->fontModel->store($storeData);
 
                 return [
                   'status' => 200,
@@ -59,16 +68,7 @@ class FontController
 
     public function getFonts()
     {
-        $conn = getConnection();
-
-        $stmt = $conn->prepare("SELECT * FROM fonts WHERE status = ?");
-        $status = 1;
-        $stmt->bind_param('i', $status);
-
-        $stmt->execute();
-        $result = $stmt->get_result();
-        $fonts = $result->fetch_all(MYSQLI_ASSOC);
-        $stmt->close();
+        $fonts = $this->fontModel->all();
         return [
             'status' => 200,
             'fonts' => $fonts
@@ -78,15 +78,7 @@ class FontController
     public function deleteFont($fontId)
     {
         //check if font exists
-
-        $conn = getConnection();
-        $stmt = $conn->prepare("SELECT * FROM fonts WHERE id = ?");
-        $stmt->bind_param('i', $fontId);
-        $stmt->execute();
-        $result = $stmt->get_result();
-        $font = $result->fetch_assoc();
-        $stmt->close();
-
+        $font = $this->fontModel->read($fontId);
         if (!$font) {
             return [
                 'status' => 404,
@@ -95,7 +87,7 @@ class FontController
         }
 
         //check if font exists in font groups
-
+        $conn = getConnection();
         $stmt = $conn->prepare("SELECT * FROM font_group_fonts WHERE font_id = ?");
         $stmt->bind_param('i', $fontId);
         $stmt->execute();
@@ -111,18 +103,13 @@ class FontController
         }
 
         //delete font
-        $stmt = $conn->prepare("DELETE FROM fonts WHERE id = ?");
-        $stmt->bind_param('i', $fontId);
-        $stmt->execute();
-        $stmt->close();
+        $this->fontModel->delete($fontId);
 
         //delete file from storage
         try {
             unlink($this->getUploadDir() . $font['file']);
         } catch (\Exception $e) {
-
         }
-
 
         return [
             'status' => 200,
