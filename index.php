@@ -26,7 +26,7 @@ ini_set('display_errors', '1');
             <form id="fontUploadForm" enctype="multipart/form-data">
                 <label for="fontInput" class="file-drop-area">
                     <p>Drag & Drop files here or click to upload</p>
-                    <input type="file" id="fontInput" accept=".ttf" multiple hidden>
+                    <input type="file" id="fontInput" accept=".ttf" hidden>
                 </label>
             </form>
             <small class="text-muted">Fonts will be uploaded automatically when selected.</small>
@@ -51,18 +51,6 @@ ini_set('display_errors', '1');
                     </tr>
                     </thead>
                     <tbody>
-                    <tr>
-                        <td>Font 0</td>
-                        <td><span >Example Style</span></td>
-                        <td><a href="javascript:void(0);" onclick="deleteFont(1)" class="text-danger">Delete</a></td>
-                    </tr>
-
-                    <tr>
-                        <td>Font 1</td>
-                        <td><span >Example Style</span></td>
-                        <td><a href="javascript:void(0);" onclick="deleteFont(2)" class="text-danger">Delete</a></td>
-                    </tr>
-
                     </tbody>
                 </table>
             </div>

@@ -1,1 +1,3 @@
 /.idea
+/uploads/fonts/*
+!uploads/fonts/.gitkeep
